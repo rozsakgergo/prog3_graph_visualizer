@@ -1,105 +1,122 @@
 package main.com.rozsakgergo.elements.data;
 
 import main.com.rozsakgergo.elements.graphelements.graphpoints.GraphPoint;
+import main.com.rozsakgergo.elements.graphelements.lines.BlackLine;
 import main.com.rozsakgergo.elements.graphelements.lines.GraphLine;
 
 import javax.swing.table.AbstractTableModel;
 
 public class LineTableModel extends AbstractTableModel {
-    private final GraphLineData data;
-    private final String[] column_names = {"Type", "ID", "Start", "End"};
-    public LineTableModel(GraphLineData data) { this.data = data; }
 
-    @Override
-    public int getRowCount() {
-        return data.getLines().size();
+    private final GraphLineData lineData;
+    private final GraphPointData pointData;
+    private final String[] columnNames = {"Type", "Start", "End", "Len"};
+
+    public LineTableModel(GraphLineData lineData, GraphPointData pointData) {
+        this.lineData = lineData;
+        this.pointData = pointData;
     }
 
     @Override
-    public String getColumnName(int column) {
-        return column_names[column];
+    public int getRowCount() {
+        return lineData.size();
     }
 
     @Override
     public int getColumnCount() {
-        return column_names.length;
+        return columnNames.length;
     }
 
     @Override
-    public Class<?> getColumnClass(int c) {
-        switch (c) {
-            case 0:
-            case 1:
-                return String.class;
-            case 2:
-            case 3:
-                return GraphPoint.class;
-            default:
-                return Object.class;
+    public String getColumnName(int column) {
+        return columnNames[column];
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        switch (columnIndex) {
+            case 0: return String.class;      // Type
+            case 1:                          // Start
+            case 2: return GraphPoint.class; // End
+            case 3: return Double.class;     // Len
+            default: return Object.class;
         }
     }
 
     @Override
-    public boolean isCellEditable(int row, int col) {
-        return col == 0 || col == 2 || col == 3;
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 0 || columnIndex == 1 || columnIndex == 2;
     }
 
     @Override
-    public Object getValueAt(int row, int col) {
-        GraphLine p = data.getLines().get(row);
-
-        switch (col) {
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        GraphLine line = lineData.get(rowIndex);
+        switch (columnIndex) {
             case 0:
-                return p.getClass().getSimpleName();
+                return line.getClass().getSimpleName();
             case 1:
-                return p.getId();
+                return line.getStart();
             case 2:
-                return p.getStart();
+                return line.getEnd();
             case 3:
-                return p.getEnd();
+                return 0.0; // or compute from start/end if you want
             default:
                 return null;
         }
     }
 
-
     @Override
-    public void setValueAt(Object aValue, int row, int col) {
-        switch (col) {
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        GraphLine line = lineData.get(rowIndex);
+        switch (columnIndex) {
             case 0:
-                data.changeTypeAt(row, (String) aValue);
+                // change type if you have multiple line types
+                break;
+            case 1:
+                if (aValue instanceof GraphPoint) {
+                    lineData.setStartAt(rowIndex, (GraphPoint) aValue);
+                }
                 break;
             case 2:
-                data.updateXAt(row, (GraphPoint) aValue);
-                break;
-            case 3:
-                data.updateYAt(row, (GraphPoint) aValue);
+                if (aValue instanceof GraphPoint) {
+                    lineData.setEndAt(rowIndex, (GraphPoint) aValue);
+                }
                 break;
             default:
                 break;
         }
-        fireTableRowsUpdated(row, row);
+        fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
+    // === API used by panel buttons ===
 
     public void addRow() {
-        int new_index = data.addNewLine();
-        fireTableRowsInserted(new_index, new_index);
+        // You probably have concrete line types, adjust as needed
+        GraphPoint defaultStart = pointData.getPoints().isEmpty() ? null : pointData.getPoints().get(0);
+        GraphPoint defaultEnd = defaultStart;
+
+        GraphLine newLine = new BlackLine("L" + lineData.size(), defaultStart, defaultEnd);
+        int newIndex = lineData.addNewLine(newLine);
+        fireTableRowsInserted(newIndex, newIndex);
     }
 
     public void removeRow(int row) {
-        data.removeAt(row);
+        lineData.removeAt(row);
         fireTableRowsDeleted(row, row);
     }
 
     public void removeAllRows() {
         int count = getRowCount();
-        data.clear();
+        lineData.clear();
         if (count > 0)
             fireTableRowsDeleted(0, count - 1);
     }
 
-    public GraphLineData getGraphPointData() {
-        return data;
+    public GraphLineData getGraphLineData() {
+        return lineData;
+    }
+
+    public GraphPointData getGraphPointData() {
+        return pointData;
     }
 }

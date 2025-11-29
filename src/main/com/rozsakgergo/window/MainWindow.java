@@ -23,7 +23,7 @@ public class MainWindow extends JFrame {
         GraphPointData graphPointData = new GraphPointData();
         GraphLineData graphLineData = new GraphLineData();
 
-        PlottingPanel plottingPanel = new PlottingPanel(graphPointData);
+        PlottingPanel plottingPanel = new PlottingPanel(graphPointData, graphLineData);
         GraphPointPanel graphPointPanel = new GraphPointPanel(graphPointData, plottingPanel);
         GraphLinePanel graphLinePanel = new GraphLinePanel(graphLineData, graphPointData, plottingPanel);
         StatsPanel statsPanel = new StatsPanel(plottingPanel);

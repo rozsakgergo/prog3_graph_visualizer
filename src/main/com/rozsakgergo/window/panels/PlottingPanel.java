@@ -1,7 +1,9 @@
 package main.com.rozsakgergo.window.panels;
 
+import main.com.rozsakgergo.elements.data.GraphLineData;
 import main.com.rozsakgergo.elements.data.GraphPointData;
 import main.com.rozsakgergo.elements.graphelements.graphpoints.GraphPoint;
+import main.com.rozsakgergo.elements.graphelements.lines.GraphLine;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,11 +17,13 @@ public class PlottingPanel extends JPanel {
     }
     private static int scale = 1;
     private final GraphPointData graphPointData;
+    private final GraphLineData graphLineData;
     private GRAPHPANEL_STATES gp_state = GRAPHPANEL_STATES.NORMAL;
 
-    public PlottingPanel(GraphPointData graphPointData) {
+    public PlottingPanel(GraphPointData graphPointData, GraphLineData graphLineData) {
         this.setBackground(Color.WHITE);
         this.graphPointData = graphPointData;
+        this.graphLineData = graphLineData;
     }
 
     @Override
@@ -30,6 +34,12 @@ public class PlottingPanel extends JPanel {
         paintGraphLines(g2);
         for (GraphPoint p : graphPointData.getPoints()) {
             paintPoint(g2, p);
+        }
+
+        if(graphLineData.size() > 0 && graphPointData.size() >= 2) {
+            for (GraphLine l : graphLineData.getLines()) {
+                paintLine(g2, l);
+            }
         }
 
         if(gp_state == GRAPHPANEL_STATES.DETAILED) {
@@ -170,6 +180,34 @@ public class PlottingPanel extends JPanel {
             System.err.println("Exception caught");
         }
     }
+
+    public void paintLine(Graphics2D g2, GraphLine l) {
+        if (l.getStart() == null || l.getEnd() == null) return;
+
+        int spacing = 30;
+        double cx = getWidth() / 2.0;
+        double cy = getHeight() / 2.0;
+
+        // Start
+        double sx = (l.getStart().getX() / scale) * spacing + cx;
+        double sy = -(l.getStart().getY() / scale) * spacing + cy;
+
+        // End
+        double ex = (l.getEnd().getX() / scale) * spacing + cx;
+        double ey = -(l.getEnd().getY() / scale) * spacing + cy;
+
+        double shape_scale_factor = 0.8;
+        int shape_size = Math.min(Math.max(1, (int)(3 - scale * shape_scale_factor)), 3);
+        g2.setStroke(new BasicStroke(shape_size));
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.drawLine(
+                (int) Math.round(sx),
+                (int) Math.round(sy),
+                (int) Math.round(ex),
+                (int) Math.round(ey)
+        );
+    }
+
 
     public static int getScale() {
         return scale;

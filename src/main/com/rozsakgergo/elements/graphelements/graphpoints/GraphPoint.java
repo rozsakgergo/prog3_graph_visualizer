@@ -18,4 +18,9 @@ public abstract class GraphPoint {
     public double getX() { return abs_x; }
     public double getY() { return abs_y; }
     public String getId() { return id; }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

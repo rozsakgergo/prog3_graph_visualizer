@@ -17,6 +17,39 @@ public class GraphLineData {
         return Collections.unmodifiableList(graphLines);
     }
 
+    public int addNewLine(GraphLine line) {
+        graphLines.add(line);
+        return graphLines.size() - 1;
+    }
+
+    public void removeAt(int index) {
+        if (index >= 0 && index < graphLines.size()) {
+            graphLines.remove(index);
+        }
+    }
+
+    public void clear() {
+        graphLines.clear();
+    }
+
+    public GraphLine get(int index) {
+        return graphLines.get(index);
+    }
+
+    public int size() {
+        return graphLines.size();
+    }
+
+    public void setStartAt(int row, GraphPoint start) {
+        GraphLine line = graphLines.get(row);
+        line.start = start; // make start/end package-private or expose setters
+    }
+
+    public void setEndAt(int row, GraphPoint end) {
+        GraphLine line = graphLines.get(row);
+        line.end = end;
+    }
+
     public int addNewLine() {
         String id = indexToLabel(graphLines.size());
         LineFactory f = types.get("BlackLine"); // default
@@ -33,16 +66,6 @@ public class GraphLineData {
             n = (n - 1) / 26;
         }
         return sb.toString();
-    }
-
-    public void removeAt(int index) {
-        if (index >= 0 && index < graphLines.size()) {
-            graphLines.remove(index);
-        }
-    }
-
-    public void clear() {
-        graphLines.clear();
     }
 
     public void changeTypeAt(int row, String type_name) {

@@ -3,6 +3,8 @@ package main.com.rozsakgergo.window.panels;
 import main.com.rozsakgergo.elements.data.GraphLineData;
 import main.com.rozsakgergo.elements.data.GraphPointData;
 import main.com.rozsakgergo.elements.data.LineTableModel;
+import main.com.rozsakgergo.window.renderers.PointCellEditor;
+import main.com.rozsakgergo.window.renderers.PointCellRenderer;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -26,27 +28,46 @@ public class GraphLinePanel extends JPanel {
         this.setBackground(Color.RED);
         setLayout(new BorderLayout());
 
-        tableModel = new LineTableModel(graphLineData);
+        tableModel = new LineTableModel(graphLineData, graphPointData);
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
         table.setFocusable(false);
 
-        tableModel.addTableModelListener(e -> {
-            plottingPanel.repaint();
-        });
+        tableModel.addTableModelListener(e -> plottingPanel.repaint());
 
+        // === Type column editor as before ===
         JComboBox<String> typeBox = new JComboBox<>(TYPES);
         TableColumn typeCol = table.getColumnModel().getColumn(0);
         typeCol.setCellEditor(new DefaultCellEditor(typeBox));
 
-        /*
-        TODO: COMBOBOX THAT LETS ME SELECT POINTS
-         */
+        // === Start/End point columns ===
+        int startColIndex = 1;
+        int endColIndex = 2;
+
+        // Renderer: show point ID
+        PointCellRenderer pointRenderer = new PointCellRenderer();
+        table.getColumnModel().getColumn(startColIndex).setCellRenderer(pointRenderer);
+        table.getColumnModel().getColumn(endColIndex).setCellRenderer(pointRenderer);
+
+        // Editors with filtering rules
+        PointCellEditor startEditor = new PointCellEditor(
+                table, graphPointData, graphLineData,
+                true,  // isStartColumn
+                startColIndex, endColIndex
+        );
+        PointCellEditor endEditor = new PointCellEditor(
+                table, graphPointData, graphLineData,
+                false, // isStartColumn
+                startColIndex, endColIndex
+        );
+
+        table.getColumnModel().getColumn(startColIndex).setCellEditor(startEditor);
+        table.getColumnModel().getColumn(endColIndex).setCellEditor(endEditor);
 
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
-        // === Buttons ===
+        // === Buttons (unchanged) ===
         JPanel button_panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         JButton button_add = new JButton("Add Line");
         JButton button_remove = new JButton("Remove Selected");
@@ -71,20 +92,22 @@ public class GraphLinePanel extends JPanel {
 
         button_remove.addActionListener(e -> {
             int r = table.getSelectedRow();
-            if(r >= 0) {
+            if (r >= 0) {
                 tableModel.removeRow(r);
                 plottingPanel.repaint();
             } else {
                 JOptionPane.showMessageDialog(this, "No row selected!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
+
         button_removeall.addActionListener(e -> {
             tableModel.removeAllRows();
             plottingPanel.repaint();
         });
+
         button_print.addActionListener(e -> {
             System.out.println("tableModel elements:");
-            for(int i = 0; i < tableModel.getRowCount(); i++) {
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
                 System.out.print(tableModel.getValueAt(i, 0));
                 System.out.print(" ");
                 System.out.print(tableModel.getValueAt(i, 1));
@@ -97,3 +120,4 @@ public class GraphLinePanel extends JPanel {
         });
     }
 }
+

@@ -8,7 +8,7 @@ import java.io.IOException;
 public abstract class GraphLine {
     private final String id;
     private final double len;
-    GraphPoint start, end;
+    public GraphPoint start, end;
 
     public GraphLine(String id, GraphPoint start, GraphPoint end) {
         this.id = id;

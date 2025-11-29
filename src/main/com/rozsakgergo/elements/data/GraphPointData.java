@@ -24,6 +24,10 @@ public class GraphPointData {
         return graphPoints.size() - 1;
     }
 
+    public int size() {
+        return graphPoints.size();
+    }
+
     public static String indexToLabel(int idx) {
         int n = idx + 1;
         StringBuilder sb = new StringBuilder();
