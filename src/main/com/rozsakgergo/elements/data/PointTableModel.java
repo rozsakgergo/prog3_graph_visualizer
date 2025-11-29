@@ -26,11 +26,16 @@ public class PointTableModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int c) {
-        return switch (c) {
-            case 0, 1 -> String.class;
-            case 2, 3 -> Double.class;
-            default -> Object.class;
-        };
+        switch (c) {
+            case 0:
+            case 1:
+                return String.class;
+            case 2:
+            case 3:
+                return Double.class;
+            default:
+                return Object.class;
+        }
     }
 
     @Override
@@ -41,29 +46,44 @@ public class PointTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int col) {
         GraphPoint p = data.getPoints().get(row);
-        return switch (col) {
-            case 0 -> p.getClass().getSimpleName();
-            case 1 -> p.getId();
-            case 2 -> p.getX();
-            case 3 -> p.getY();
-            default -> null;
-        };
+        switch (col) {
+            case 0:
+                return p.getClass().getSimpleName();
+            case 1:
+                return p.getId();
+            case 2:
+                return p.getX();
+            case 3:
+                return p.getY();
+            default:
+                return null;
+        }
     }
-
     @Override
     public void setValueAt(Object aValue, int row, int col) {
         switch (col) {
-            case 0 -> data.changeTypeAt(row, (String) aValue);
-            case 2 -> data.updateXAt(row, toDouble(aValue));
-            case 3 -> data.updateYAt(row, toDouble(aValue));
+            case 0:
+                data.changeTypeAt(row, (String) aValue);
+                break;
+            case 2:
+                data.updateXAt(row, toDouble(aValue));
+                break;
+            case 3:
+                data.updateYAt(row, toDouble(aValue));
+                break;
+            default:
+                break;
         }
+
         fireTableRowsUpdated(row, row);
     }
 
     private double toDouble(Object v) {
-        if (v instanceof Double i) return i;
-        if (v instanceof Number n) return n.doubleValue();
-        return Double.parseDouble(String.valueOf(v).trim());
+        if (v instanceof Number) {
+            return ((Number) v).doubleValue();
+        }
+        String s = String.valueOf(v).trim();
+        return Double.parseDouble(s);
     }
 
     public void addRow() {

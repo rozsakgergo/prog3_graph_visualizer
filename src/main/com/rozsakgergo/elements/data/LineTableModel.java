@@ -27,11 +27,16 @@ public class LineTableModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int c) {
-        return switch (c) {
-            case 0, 1 -> String.class;
-            case 2, 3 -> GraphPoint.class;
-            default -> Object.class;
-        };
+        switch (c) {
+            case 0:
+            case 1:
+                return String.class;
+            case 2:
+            case 3:
+                return GraphPoint.class;
+            default:
+                return Object.class;
+        }
     }
 
     @Override
@@ -42,24 +47,40 @@ public class LineTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int col) {
         GraphLine p = data.getLines().get(row);
-        return switch (col) {
-            case 0 -> p.getClass().getSimpleName();
-            case 1 -> p.getId();
-            case 2 -> p.getStart();
-            case 3 -> p.getEnd();
-            default -> null;
-        };
+
+        switch (col) {
+            case 0:
+                return p.getClass().getSimpleName();
+            case 1:
+                return p.getId();
+            case 2:
+                return p.getStart();
+            case 3:
+                return p.getEnd();
+            default:
+                return null;
+        }
     }
+
 
     @Override
     public void setValueAt(Object aValue, int row, int col) {
         switch (col) {
-            case 0 -> data.changeTypeAt(row, (String) aValue);
-            case 2 -> data.updateXAt(row, (GraphPoint)aValue);
-            case 3 -> data.updateYAt(row, (GraphPoint)aValue);
+            case 0:
+                data.changeTypeAt(row, (String) aValue);
+                break;
+            case 2:
+                data.updateXAt(row, (GraphPoint) aValue);
+                break;
+            case 3:
+                data.updateYAt(row, (GraphPoint) aValue);
+                break;
+            default:
+                break;
         }
         fireTableRowsUpdated(row, row);
     }
+
 
     public void addRow() {
         int new_index = data.addNewLine();
