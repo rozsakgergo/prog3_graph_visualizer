@@ -42,52 +42,22 @@ public class GraphLineData {
 
     public void setStartAt(int row, GraphPoint start) {
         GraphLine line = graphLines.get(row);
-        line.start = start; // make start/end package-private or expose setters
+        line.setStart(start);
     }
 
     public void setEndAt(int row, GraphPoint end) {
         GraphLine line = graphLines.get(row);
-        line.end = end;
+        line.setEnd(end);
     }
 
-    public int addNewLine() {
-        String id = indexToLabel(graphLines.size());
-        LineFactory f = types.get("BlackLine"); // default
-        graphLines.add(f.create(id, null, null));
-        return graphLines.size() - 1;
-    }
-
-    public static String indexToLabel(int idx) {
-        int n = idx + 1;
-        StringBuilder sb = new StringBuilder();
-        while (n > 0) {
-            int rem = (n - 1) % 26;
-            sb.insert(0, (char) ('A' + rem));
-            n = (n - 1) / 26;
-        }
-        return sb.toString();
-    }
-
-    public void changeTypeAt(int row, String type_name) {
+    public void changeTypeAt(int row, String typeName) {
         GraphLine old = graphLines.get(row);
-        LineFactory f = types.get(type_name);
+        LineFactory f = types.get(typeName);
         if (f == null) return;
-        graphLines.set(row, f.create(old.getId(), old.getStart(), old.getEnd()));
+
+        GraphLine replacement = f.create(old.getId(), old.getStart(), old.getEnd());
+        replacement.setLen(old.getLen());
+        graphLines.set(row, replacement);
     }
 
-    public void updateXAt(int row, GraphPoint new_start) {
-        GraphLine old = graphLines.get(row);
-        graphLines.set(row, recreateSameType(old, new_start, old.getStart()));
-    }
-
-    public void updateYAt(int row, GraphPoint new_end) {
-        GraphLine old = graphLines.get(row);
-        graphLines.set(row, recreateSameType(old, old.getStart(), new_end));
-    }
-
-    private GraphLine recreateSameType(GraphLine old, GraphPoint old_start, GraphPoint old_end) {
-        String typeName = old.getClass().getSimpleName();
-        LineFactory f = types.getOrDefault(typeName, BlackLine::new);
-        return f.create(old.getId(), old_start, old_end);
-    }
 }

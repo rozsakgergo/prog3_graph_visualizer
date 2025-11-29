@@ -2,6 +2,8 @@ package main.com.rozsakgergo.elements.graphelements.lines;
 
 import main.com.rozsakgergo.elements.graphelements.graphpoints.GraphPoint;
 
+import java.awt.*;
+
 public class ColoredLine extends GraphLine {
 
     public ColoredLine(String id, GraphPoint start, GraphPoint end) {
@@ -9,6 +11,8 @@ public class ColoredLine extends GraphLine {
     }
 
     @Override
-    public void drawShape() {
+    public void drawLine(Graphics2D g2, int sx, int sy, int ex, int ey) {
+        g2.setColor(new Color(255, 0, 0));
+        g2.drawLine(sx, sy, ex, ey);
     }
 }

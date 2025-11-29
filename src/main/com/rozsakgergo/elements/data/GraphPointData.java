@@ -45,10 +45,6 @@ public class GraphPointData {
         }
     }
 
-    public GraphPoint findPoint(int index) {
-        return graphPoints.get(index);
-    }
-
     public void clear() {
         graphPoints.clear();
     }
@@ -61,18 +57,12 @@ public class GraphPointData {
     }
 
     public void updateXAt(int row, double new_x) {
-        GraphPoint old = graphPoints.get(row);
-        graphPoints.set(row, recreateSameType(old, new_x, old.getY()));
+        GraphPoint p = graphPoints.get(row);
+        p.setX(new_x);
     }
 
     public void updateYAt(int row, double new_y) {
-        GraphPoint old = graphPoints.get(row);
-        graphPoints.set(row, recreateSameType(old, old.getX(), new_y));
-    }
-
-    private GraphPoint recreateSameType(GraphPoint old, double x, double y) {
-        String typeName = old.getClass().getSimpleName();
-        PointFactory f = types.getOrDefault(typeName, FilledPoint::new);
-        return f.create(old.getId(), x, y);
+        GraphPoint p = graphPoints.get(row);
+        p.setY(new_y);
     }
 }

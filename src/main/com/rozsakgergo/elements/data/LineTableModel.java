@@ -1,5 +1,6 @@
 package main.com.rozsakgergo.elements.data;
 
+import main.com.rozsakgergo.elements.graphelements.graphpoints.FilledPoint;
 import main.com.rozsakgergo.elements.graphelements.graphpoints.GraphPoint;
 import main.com.rozsakgergo.elements.graphelements.lines.BlackLine;
 import main.com.rozsakgergo.elements.graphelements.lines.GraphLine;
@@ -59,7 +60,7 @@ public class LineTableModel extends AbstractTableModel {
             case 2:
                 return line.getEnd();
             case 3:
-                return 0.0; // or compute from start/end if you want
+                return line.getId().equals("Null") ? 0 : line.getLen();
             default:
                 return null;
         }
@@ -67,10 +68,11 @@ public class LineTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        GraphLine line = lineData.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                // change type if you have multiple line types
+                if (aValue instanceof String) {
+                    lineData.changeTypeAt(rowIndex, (String) aValue);
+                }
                 break;
             case 1:
                 if (aValue instanceof GraphPoint) {
@@ -88,11 +90,9 @@ public class LineTableModel extends AbstractTableModel {
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
-    // === API used by panel buttons ===
 
     public void addRow() {
-        // You probably have concrete line types, adjust as needed
-        GraphPoint defaultStart = pointData.getPoints().isEmpty() ? null : pointData.getPoints().get(0);
+        GraphPoint defaultStart = pointData.getPoints().isEmpty() ? new FilledPoint("Null", 0,0) : pointData.getPoints().get(0);
         GraphPoint defaultEnd = defaultStart;
 
         GraphLine newLine = new BlackLine("L" + lineData.size(), defaultStart, defaultEnd);

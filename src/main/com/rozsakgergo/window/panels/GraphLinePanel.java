@@ -35,29 +35,25 @@ public class GraphLinePanel extends JPanel {
 
         tableModel.addTableModelListener(e -> plottingPanel.repaint());
 
-        // === Type column editor as before ===
         JComboBox<String> typeBox = new JComboBox<>(TYPES);
         TableColumn typeCol = table.getColumnModel().getColumn(0);
         typeCol.setCellEditor(new DefaultCellEditor(typeBox));
 
-        // === Start/End point columns ===
         int startColIndex = 1;
         int endColIndex = 2;
 
-        // Renderer: show point ID
         PointCellRenderer pointRenderer = new PointCellRenderer();
         table.getColumnModel().getColumn(startColIndex).setCellRenderer(pointRenderer);
         table.getColumnModel().getColumn(endColIndex).setCellRenderer(pointRenderer);
 
-        // Editors with filtering rules
         PointCellEditor startEditor = new PointCellEditor(
                 table, graphPointData, graphLineData,
-                true,  // isStartColumn
+                true,
                 startColIndex, endColIndex
         );
         PointCellEditor endEditor = new PointCellEditor(
                 table, graphPointData, graphLineData,
-                false, // isStartColumn
+                false,
                 startColIndex, endColIndex
         );
 
@@ -67,7 +63,6 @@ public class GraphLinePanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
-        // === Buttons (unchanged) ===
         JPanel button_panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         JButton button_add = new JButton("Add Line");
         JButton button_remove = new JButton("Remove Selected");

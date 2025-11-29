@@ -59,7 +59,7 @@ public class GraphPointPanel extends JPanel {
         button_panel.add(button_print);
         add(button_panel, BorderLayout.SOUTH);
 
-        // === Button Actions ===
+        // Button actions
         button_add.addActionListener(e -> {
             tableModel.addRow();
             plottingPanel.repaint();

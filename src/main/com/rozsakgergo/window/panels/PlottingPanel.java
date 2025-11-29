@@ -32,20 +32,35 @@ public class PlottingPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
 
         paintGraphLines(g2);
+
+        if(graphLineData.size() > 0 && graphPointData.size() >= 2) {
+            for (GraphLine l : graphLineData.getLines()) {
+                if(!l.getStart().getId().equals("Null") && !l.getEnd().getId().equals("Null")) {
+                    paintLine(g2, l);
+                    l.setLen(calculateDistance(l));
+                }
+            }
+        }
+
         for (GraphPoint p : graphPointData.getPoints()) {
             paintPoint(g2, p);
         }
 
-        if(graphLineData.size() > 0 && graphPointData.size() >= 2) {
-            for (GraphLine l : graphLineData.getLines()) {
-                paintLine(g2, l);
-            }
-        }
-
         if(gp_state == GRAPHPANEL_STATES.DETAILED) {
-            System.out.println("paintComponent called: DETAILED MODE");
             drawPointDetails(g2);
         }
+    }
+
+    private double calculateDistance(GraphLine l) {
+        double x1 = l.getStart().getX();
+        double y1 = l.getStart().getY();
+        double x2 = l.getEnd().getX();
+        double y2 = l.getEnd().getY();
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     public void drawPointDetails(Graphics2D g2) {
@@ -200,12 +215,7 @@ public class PlottingPanel extends JPanel {
         int shape_size = Math.min(Math.max(1, (int)(3 - scale * shape_scale_factor)), 3);
         g2.setStroke(new BasicStroke(shape_size));
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.drawLine(
-                (int) Math.round(sx),
-                (int) Math.round(sy),
-                (int) Math.round(ex),
-                (int) Math.round(ey)
-        );
+        l.drawLine(g2, (int)Math.round(sx), (int)Math.round(sy), (int)Math.round(ex), (int)Math.round(ey));
     }
 
 
